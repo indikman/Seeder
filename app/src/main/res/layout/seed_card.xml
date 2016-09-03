@@ -1,0 +1,140 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/card_view"
+    android:layout_gravity="center"
+    android:layout_width="match_parent"
+    android:layout_height="300dp"
+    android:layout_margin="3dp"
+    card_view:cardCornerRadius="3dp"
+    android:elevation="5dp">
+
+
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="fill_parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.6">
+
+            <ImageView
+                android:id="@+id/seed_thumbnail"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:src="@drawable/sample"
+                android:contentDescription="@string/seedimage" />
+
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.25">
+
+            <TextView
+                android:text="@string/sample_text"
+                android:id="@+id/seed_text"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="10dp"
+                android:textSize="15sp"
+                android:typeface="serif" />
+
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="#eeeeee"/>
+
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.15"
+            android:paddingTop="5dp"
+            android:paddingBottom="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25">
+                    <ImageView
+                        android:id="@+id/seed_like"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingBottom="5dp"
+                        android:paddingTop="5dp"
+                        android:src="@drawable/like" />
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25">
+                    <TextView
+                        android:text="999"
+                        android:id="@+id/seed_like_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="15dp"
+                        android:gravity="center_vertical"
+                        android:textColor="#f7c1c1" />
+                </RelativeLayout>
+
+                <View
+                    android:layout_height="fill_parent"
+                    android:layout_width="1dp"
+                    android:background="#eeeeee"/>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25">
+
+                    <ImageView
+                        android:id="@+id/seed_relies"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp"
+                        android:src="@drawable/reply" />
+
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.25">
+                    <TextView
+                        android:text="999"
+                        android:id="@+id/seed_replies_count"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:textSize="15dp"
+                        android:gravity="center_vertical"
+                        android:textColor="#9face9" />
+                </RelativeLayout>
+
+            </LinearLayout>
+
+
+        </RelativeLayout>
+
+
+    </LinearLayout>
+
+
+
+</android.support.v7.widget.CardView>
