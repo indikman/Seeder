@@ -3,6 +3,8 @@ package com.decodar.seeder;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
@@ -14,6 +16,8 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
@@ -29,6 +33,14 @@ public class SeedFeed extends AppCompatActivity {
         setContentView(R.layout.activity_seed_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        //Changing the stats bar color
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            Window window = getWindow();
+            window.addFlags(WindowManager.LayoutParams.FLAG_DRAWS_SYSTEM_BAR_BACKGROUNDS);
+            window.setStatusBarColor(Color.DKGRAY);
+
+        }
 
         List<Seed> seedlist = new ArrayList<Seed>();
         seedlist.add(new Seed("Sample", "This is a sample!", BitmapFactory.decodeResource(getResources(), R.drawable.sample), 10,5));

@@ -90,7 +90,7 @@
                         android:layout_height="match_parent"
                         android:textSize="15dp"
                         android:gravity="center_vertical"
-                        android:textColor="#f7c1c1" />
+                        android:textColor="#9eca78" />
                 </RelativeLayout>
 
                 <View
@@ -124,7 +124,7 @@
                         android:layout_height="match_parent"
                         android:textSize="15dp"
                         android:gravity="center_vertical"
-                        android:textColor="#9face9" />
+                        android:textColor="#9eca78" />
                 </RelativeLayout>
 
             </LinearLayout>

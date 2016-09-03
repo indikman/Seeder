@@ -4,4 +4,7 @@
     <string name="sample_text">This is a sample text! I found an awesome Aquarium to get amazing fish for your tank! Check this out!</string>
     <string name="seedimage">SeedImage</string>
     <string name="title_activity_new_seed">New Seed</string>
+    <string name="add_to_favourites">Add to Favourites</string>
+    <string name="pick_image_intent_text">Choose an image</string>
+
 </resources>
