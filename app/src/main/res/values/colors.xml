@@ -3,4 +3,8 @@
     <color name="colorPrimary">#ededed</color>
     <color name="colorPrimaryDark">#666666</color>
     <color name="colorAccent">#5eba36</color>
+
+    <color name="black_overlay">#66000000</color>
+
+    <color name="light_green">#8CC63F</color>
 </resources>

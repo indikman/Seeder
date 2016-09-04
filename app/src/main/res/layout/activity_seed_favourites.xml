@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context="com.decodar.seeder.SeedFeed">
+    tools:context=".SeedFavourites">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
@@ -16,26 +16,13 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="#eeeeee"
+            android:background="?attr/colorPrimary"
             app:theme="@style/ToolBarStyle"
-            app:popupTheme="@style/AppTheme.PopupOverlay">
-
-            <ImageButton
-                android:id="@+id/btn_seed_favourites"
-                android:layout_width="75dp"
-                android:layout_height="wrap_content"
-                android:src="@drawable/fav"
-                android:layout_gravity="right"
-                android:background="#eeeeee"
-                android:scaleType="fitCenter"
-                android:paddingTop="15dp"
-                android:paddingBottom="15dp"
-                />
-            </android.support.v7.widget.Toolbar>
+            app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_seed_feed" />
+    <include layout="@layout/content_seed_favourites" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -43,7 +30,6 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/plus"
-        app:backgroundTint="#57a221" />
+        android:src="@android:drawable/ic_dialog_email" />
 
 </android.support.design.widget.CoordinatorLayout>

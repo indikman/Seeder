@@ -1,14 +1,11 @@
 package com.decodar.seeder;
 
 import android.content.Intent;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -18,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ImageButton;
 
 import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
@@ -77,6 +75,15 @@ public class SeedFeed extends AppCompatActivity {
 
             }
         });
+
+
+        ImageButton btnFavourites = (ImageButton)findViewById(R.id.btn_seed_favourites);
+        btnFavourites.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openFavourites();
+            }
+        });
     }
 
     public void addNewSeed(){
@@ -84,6 +91,10 @@ public class SeedFeed extends AppCompatActivity {
         this.startActivity(intent);
     }
 
+    private void openFavourites(){
+        Intent intent = new Intent(this, SeedFavourites.class);
+        this.startActivity(intent);
+    }
 
 
 
