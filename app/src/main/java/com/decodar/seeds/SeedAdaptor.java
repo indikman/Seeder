@@ -33,10 +33,10 @@ public class SeedAdaptor extends RecyclerView.Adapter<SeedAdaptor.SeedViewHolder
     public void onBindViewHolder(SeedViewHolder holder, int position) {
         //what happens here :P
         Seed seed = seedList.get(position);
-        holder.view_seedText.setText(seed.seed_text);
-        holder.view_seedImage.setImageBitmap(seed.seed_image);
-        holder.view_likeCount.setText("" + seed.no_of_likes);
-        holder.view_replyCount.setText("" + seed.no_of_replies);
+        holder.view_seedText.setText(seed.getSeed_text());
+        holder.view_seedImage.setImageBitmap(seed.getSeed_image());
+        holder.view_likeCount.setText("" + seed.getNo_of_likes());
+        holder.view_replyCount.setText("" + seed.getNo_of_replies());
     }
 
     @Override

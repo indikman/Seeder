@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/thin_margin"
+    android:paddingLeft="@dimen/thin_margin"
+    android:paddingRight="@dimen/thin_margin"
+    android:paddingTop="@dimen/thin_margin"
+    tools:context="com.decodar.seeder.ImageViewer">
+
+
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/imageViewer" />
+</RelativeLayout>
