@@ -1,86 +1,145 @@
 package com.decodar.db;
 
-import com.couchbase.lite.CouchbaseLiteException;
-import com.couchbase.lite.Database;
-import com.couchbase.lite.Document;
-import com.couchbase.lite.Manager;
-import com.couchbase.lite.android.AndroidContext;
-import com.couchbase.lite.util.Log;
-import com.couchbase.lite.util.StreamUtils;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
 import com.decodar.seeds.Seed;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 /**
  * Created by indik on 9/4/2016.
  */
-public class dbmanager {
+public class dbmanager extends SQLiteOpenHelper {
 
-    private String DBName = "DatabaseName";
-    final String TAG = "CouchbaseEvents";
+    public static final String db_name = "seed";
+    public static final String seed_table = "allseeds";
+    public static final String reply_table = "replies";
 
-    private Manager manager = null;
-    private Database database = null;
+    public static final String seed_id = "ID";
+    public static final String seed_text = "text";
+    public static final String seed_image = "image";
+    public static final String seed_likes = "likes";
+    public static final String seed_replies = "replies";
+    public static final String seed_favourite = "isfav";
 
-    public void initiateDB(AndroidContext context, String databaseName){
+    public static final String reply_id = "ID";
+    public static final String reply_text = "text";
+    public static final String reply_seed_id = "seedid";
+
+    public static int database_version = 1;
 
 
-        try {
-            manager = this.getManagerInstance(context);
-            database = this.getDatabaseInstance();
-        }catch(Exception e){
-            Log.e(TAG, "Error initiating database", e);
-            //return;
+    //singleton
+    private static dbmanager database = null;
+
+    public static synchronized dbmanager getInstance(Context context){
+        if(database == null){
+            database = new dbmanager(context);
         }
+        return database;
     }
 
 
-    //--------------Singleton Usage of DB Manager------------------------
-    public Database getDatabaseInstance() throws CouchbaseLiteException{
-        if((this.database == null) & (this.manager != null)){
-            this.database = manager.getDatabase(DBName);
-        }
-        return  database;
+
+    public dbmanager(Context context) {
+        super(context, db_name, null, database_version);
     }
 
-    public Manager getManagerInstance(AndroidContext context) throws IOException{
-        if(this.manager == null)
-        {
-            manager = new Manager(context, Manager.DEFAULT_OPTIONS);
-        }
-        return manager;
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        // creating all seeds table
+        db.execSQL("CREATE TABLE " + seed_table + "(" +
+                seed_id + " text primary key ," +
+                seed_text + " text ," +
+                seed_image + " text ," +
+                seed_likes + " text ," +
+                seed_replies + " text, " +
+                seed_favourite + " integer)");
+
+        //creating all replies table
+        db.execSQL("CREATE TABLE " + reply_table + "(" +
+                reply_id + " text primary key ," +
+                reply_text + " text ," +
+                reply_seed_id + " text )");
     }
 
-    //-------------Database Actions ------------------------------------
-
-    public String createDocument(Database database, Seed seed) throws CouchbaseLiteException {      //Adding a new Seed
-        Document document = this.getDatabaseInstance().createDocument();
-        String documentID = document.getId();
-
-        //Adding a new Hashmap to store data
-        Map<String, Object> seedMap = new HashMap<String, Object>();
-
-        //Adding new seed values
-        seedMap.put("ID", seed.getID());
-        seedMap.put("text", seed.getSeed_text());
-        seedMap.put("image", seed.getSeed_image());
-        seedMap.put("likes", seed.getNo_of_likes());
-        seedMap.put("replies", seed.getNo_of_replies());
-
-        try {
-            document.putProperties(seedMap);
-        }catch (CouchbaseLiteException e){
-            Log.e(TAG, "Error inserting new seed", 0);
-        }
-
-        return documentID;
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS " + seed_table);
+        db.execSQL("DROP TABLE IF EXISTS " + reply_table);
+        onCreate(db);
     }
 
-    public Document retrieveDocument(String docID) throws CouchbaseLiteException {
-        Document retrievedDocument = getDatabaseInstance().getDocument(docID);
-        return retrievedDocument;
+
+    //Insert a seed
+    public boolean addSeed(String ID, String text, String image, String likes, String replies, int isFavourite){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(seed_id, ID);
+        cv.put(seed_text, text);
+        cv.put(seed_image, image);
+        cv.put(seed_likes, likes);
+        cv.put(seed_replies, replies);
+        cv.put(seed_favourite, isFavourite);
+
+        db.insert(seed_table, null, cv);
+        return true;
     }
+
+    //Insert a reply
+    public boolean addReply(String ID, String text, String seedID)
+    {
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(reply_id, ID);
+        cv.put(reply_text, text);
+        cv.put(reply_seed_id, seedID);
+
+        db.insert(reply_table, null, cv);
+        return true;
+    }
+
+
+    //Save seed as favourite
+    public boolean saveFavourite(String ID, int isFavourite){
+        SQLiteDatabase db = this.getWritableDatabase();
+        ContentValues cv = new ContentValues();
+        cv.put(seed_favourite, isFavourite);
+
+        db.update(seed_table, cv, "id = ", new String[] {ID}); //Update the favourite column with the corresponding ID
+
+        return true;
+    }
+
+    //Get all the seeds
+    public Cursor getAllSeeds(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + seed_table, null);
+
+        return res;
+    }
+
+    //Get replies for given ID
+    public Cursor getReplies(String seedID){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + reply_table + " WHERE " + reply_seed_id + "=" + seedID, null);
+
+        return res;
+    }
+
+    //Get all the favourites
+    public Cursor getFavouriteSeeds(){
+        SQLiteDatabase db = this.getWritableDatabase();
+        Cursor res = db.rawQuery("SELECT * FROM " + seed_table + " WHERE " + seed_favourite + "=1", null);
+
+        return res;
+    }
+
+    //Delete
 }

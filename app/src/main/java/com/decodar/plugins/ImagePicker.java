@@ -4,12 +4,14 @@ package com.decodar.plugins;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.ResolveInfo;
 import android.content.res.AssetFileDescriptor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Parcelable;
+import android.preference.Preference;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.widget.ImageView;
@@ -20,6 +22,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.prefs.Preferences;
 
 /**
  * Author: Mario Velasco Casquero
@@ -36,6 +39,7 @@ public final class ImagePicker {
 
     private static int minWidthQuality = DEFAULT_MIN_WIDTH_QUALITY;
     private static int minHeightQuality = DEFAULT_MIN_HEIGHT_QUALITY;
+
 
     private ImagePicker() {
         // not called
