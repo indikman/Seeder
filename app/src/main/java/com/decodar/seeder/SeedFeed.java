@@ -143,4 +143,15 @@ public class SeedFeed extends AppCompatActivity {
         //Setting the adaptor
         cardList.setAdapter(seedAd);
     }
+
+
+
+    //Singleton
+    public static SeedFeed seedfeed = null;
+    public static SeedFeed getInstance(){
+        if(seedfeed==null)
+            seedfeed = new SeedFeed();
+
+        return seedfeed;
+    }
 }

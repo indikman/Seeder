@@ -1,5 +1,6 @@
 package com.decodar.seeder;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -25,6 +26,7 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.decodar.db.dbmanager;
 import com.decodar.plugins.ImagePicker;
@@ -47,6 +49,8 @@ public class NewSeed extends AppCompatActivity {
     private TextView txt_char_counter;
     private ImageView img_add_image;
     private CheckBox chk_favourite;
+
+    private ProgressDialog dialog;
 
 
     @Override
@@ -88,6 +92,9 @@ public class NewSeed extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }else
                 {
+                    //Show process Dialog
+                    processDialog(true);
+
                     //Save image
                     String id = generateID();
                     String imagepath = saveImage(id, ((BitmapDrawable)img_add_image.getDrawable()).getBitmap());
@@ -103,10 +110,14 @@ public class NewSeed extends AppCompatActivity {
 
                     //Todo generate the json object and start broadcasting
 
+                    processDialog(false);
+                    SeedFeed.getInstance().refreshSeeds();
+
 
                 }
-                Snackbar.make(view, "New seed added successfully", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+
+                Toast.makeText(NewSeed.this, "New seed created successfully!", Toast.LENGTH_SHORT).show();
+                finish();
 
             }
         });
@@ -169,5 +180,12 @@ public class NewSeed extends AppCompatActivity {
     public String saveImage(String imageName, Bitmap image){
         new ImageHandler(this).saveImage(imageName, image);
         return imageName + ".jpg";
+    }
+
+    public void processDialog(boolean isShow){
+        if(isShow)
+            dialog = ProgressDialog.show(this, "Creating message", "Generating a new seed...", true);
+        else
+            dialog.dismiss();
     }
 }

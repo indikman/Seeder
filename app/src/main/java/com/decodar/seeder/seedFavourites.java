@@ -1,5 +1,7 @@
 package com.decodar.seeder;
 
+import android.database.Cursor;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -10,6 +12,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 
+import com.decodar.db.dbmanager;
 import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
 
@@ -18,6 +21,8 @@ import java.util.List;
 
 public class SeedFavourites extends AppCompatActivity {
 
+    private dbmanager seed_db;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,27 +30,49 @@ public class SeedFavourites extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        //---------------Create the list of favourite seeds --------------
-        List<Seed> favouriteSeeds = new ArrayList<Seed>();
-        RecyclerView favouritesList = (RecyclerView)findViewById(R.id.favouriteSeedsList);
+        refreshSeeds();
+    }
+
+    public void refreshSeeds(){
+        seed_db = dbmanager.getInstance(this);
+        List<Seed> seedlist = new ArrayList<Seed>();
+
+        //load seeds from cursor
+        Cursor seeds = seed_db.getFavouriteSeeds();
+
+        if (seeds.moveToFirst()) {
+            while (seeds.isAfterLast() == false) {
+
+                String ID = seeds.getString(seeds.getColumnIndex(dbmanager.seed_id));
+                String seed_text = seeds.getString(seeds.getColumnIndex(dbmanager.seed_text));
+                String seed_image = seeds.getString(seeds.getColumnIndex(dbmanager.seed_image));
+                String seed_likes = seeds.getString(seeds.getColumnIndex(dbmanager.seed_likes));
+                String seed_replies = seeds.getString(seeds.getColumnIndex(dbmanager.seed_replies));
+
+                Bitmap image = new ImageHandler(this).loadImage(seed_image);
+
+                Seed seed = new Seed(ID,seed_text,image,Integer.parseInt(seed_likes),Integer.parseInt(seed_replies));
+
+                seedlist.add(seed);
+
+                seeds.moveToNext();
+            }
+        }
+        seeds.close();
 
 
-        //TODO-----------Retrieve data from the database------------------
+        SeedAdaptor seedAd = new SeedAdaptor(seedlist);
 
 
-        //TODO-----------Populate the favourites to the list -------------
-        favouriteSeeds.add(new Seed("Sample", "This is a sample!", BitmapFactory.decodeResource(getResources(), R.drawable.sample), 10,5)); //test
-
-
-        //---------------Create the list----------------------------------
-        SeedAdaptor favouritesAdaptor = new SeedAdaptor(favouriteSeeds);
-        favouritesList.setHasFixedSize(true);
+        //Adding the Recucler View
+        RecyclerView cardList = (RecyclerView)findViewById(R.id.favouriteSeedsList);
+        cardList.setHasFixedSize(true);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
-        favouritesList.setLayoutManager(llm);
+        cardList.setLayoutManager(llm);
 
         //Setting the adaptor
-        favouritesList.setAdapter(favouritesAdaptor);
+        cardList.setAdapter(seedAd);
     }
 
 }

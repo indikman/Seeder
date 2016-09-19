@@ -1,6 +1,7 @@
 package com.decodar.seeder;
 
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
@@ -25,11 +26,18 @@ public class ImageHandler {
 
     //Compressing and saving the image
     public void saveImage(String imageName, Bitmap bitmap){
+        ContextWrapper cw = new ContextWrapper(context.getApplicationContext());
+
+        File directory = cw.getDir(folderName, Context.MODE_PRIVATE);
+
+        File path = new File(directory, imageName+".jpg");
+
         FileOutputStream fos = null;
         try {
-            fos = new FileOutputStream(createFile(imageName));
-            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos); //compressing the image
+            fos = new FileOutputStream(path);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 30, fos); //compressing the image
             Log.e("Image Save", "Image saved successfully");
+            Log.e("Image Save", directory.getAbsolutePath());
         } catch (FileNotFoundException e) {
             e.printStackTrace();
             Log.e("Image Save issue", "Problem in saving the image");
