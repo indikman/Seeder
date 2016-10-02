@@ -32,6 +32,7 @@ import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class SeedFeed extends AppCompatActivity {
@@ -41,25 +42,38 @@ public class SeedFeed extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private BConnection bConnection = new BConnection();
     private String lastDiscoveredfeed = "";
+    private ArrayList<BluetoothDevice> btDeviceList = new ArrayList<BluetoothDevice>();
 
     private final BroadcastReceiver mReceiver = new
             BroadcastReceiver() {
                 public void onReceive(Context context, Intent intent) {
                     String action = intent.getAction();
-                    if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                    if(BluetoothDevice.ACTION_FOUND.equals(action)) {
                         BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        device.fetchUuidsWithSdp();
-                    } else if (BluetoothDevice.ACTION_UUID.equals(action)) {
-                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
-                        Parcelable[] uuids = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
-                        if(uuids != null) {
-                            for (Parcelable ep : uuids) {
-                                String uuid = ep.toString();
-                                // Detect/extract data here
-                                if (bConnection.decodeFromUUID(uuid) != null) {
-                                    if (!lastDiscoveredfeed.equals(bConnection.decodeFromUUID(uuid))) { //check if it has been discovered first
-                                        lastDiscoveredfeed = bConnection.decodeFromUUID(uuid);
-                                        Log.d("Decoded", bConnection.decodeFromUUID(uuid));
+                        btDeviceList.add(device);
+                    } else {
+                        if(BluetoothDevice.ACTION_UUID.equals(action)) {
+                            BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                            Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+                            for (int i=0; i<uuidExtra.length; i++) {
+                                if(bConnection.decodeFromUUID(uuidExtra[i].toString()) != null){
+                                      Log.d("Decoded", bConnection.decodeFromUUID(uuidExtra[i].toString()));
+                                }
+                            }
+                        } else {
+                            if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
+                                Log.d("tag","\nDiscovery Started...");
+                            } else {
+                                if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
+                                   Log.d("tag","\nDiscovery Finished");
+                                    Iterator<BluetoothDevice> itr = btDeviceList.iterator();
+                                    while (itr.hasNext()) {
+                                        // Get Services for paired devices
+                                        BluetoothDevice device = itr.next();
+                                        if(!device.fetchUuidsWithSdp()) {
+                                            Log.e("SeedFeed","\nSDP Failed for " + device.getName());
+                                        }
+
                                     }
                                 }
                             }
@@ -118,6 +132,8 @@ public class SeedFeed extends AppCompatActivity {
         // Getting the Bluetooth adapter
         btAdapter = BluetoothAdapter.getDefaultAdapter();
 
+        CheckBTState();
+
         //Register the BroadcastReceiver
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         filter.addAction(BluetoothDevice.ACTION_UUID);
@@ -125,7 +141,6 @@ public class SeedFeed extends AppCompatActivity {
         filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         registerReceiver(mReceiver,filter);
 
-        CheckBTState();
 
         //Changing the stats bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
