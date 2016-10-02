@@ -41,7 +41,6 @@ public class SeedFeed extends AppCompatActivity {
     private BluetoothAdapter btAdapter;
     private static final int REQUEST_ENABLE_BT = 1;
     private BConnection bConnection = new BConnection();
-    private String lastDiscoveredfeed = "";
     private ArrayList<BluetoothDevice> btDeviceList = new ArrayList<BluetoothDevice>();
 
     private final BroadcastReceiver mReceiver = new
