@@ -70,14 +70,14 @@ public class NewSeed extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         //oncreate added pl remove when necessary
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        try {
-            BluetoothServerSocket btSocket = bluetoothAdapter.
-                    listenUsingInsecureRfcommWithServiceRecord("Banner", UUID.fromString(bConnection.encodeDatatoUUID("hello")));
-            Log.d("Broadcast started",bConnection.encodeDatatoUUID("hello"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+//        try {
+//            BluetoothServerSocket btSocket = bluetoothAdapter.
+//                    listenUsingInsecureRfcommWithServiceRecord("Banner", UUID.fromString(bConnection.encodeDatatoUUID("hello")));
+//            Log.d("Broadcast started",bConnection.encodeDatatoUUID("hello"));
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
 
 
         Intent discoverableIntent = new
@@ -96,7 +96,7 @@ public class NewSeed extends AppCompatActivity {
 
         txt_newseed = (EditText) findViewById(R.id.text_newseed);                                   //Initiating UI components
         txt_char_counter = (TextView)findViewById(R.id.seed_character_count);
-        img_add_image = (ImageView)findViewById(R.id.seed_thumbnail_newseed);
+        //img_add_image = (ImageView)findViewById(R.id.seed_thumbnail_newseed);
         chk_favourite = (CheckBox)findViewById(R.id.checkBox_addtofav);
 
         ImagePicker.setMinQuality(600,600);
@@ -131,34 +131,35 @@ public class NewSeed extends AppCompatActivity {
 
                     //Save image
                     String id = generateID();
-                    String imagepath = saveImage(id, ((BitmapDrawable)img_add_image.getDrawable()).getBitmap());
+                    //String imagepath = saveImage(id, ((BitmapDrawable)img_add_image.getDrawable()).getBitmap());
 
                     if(chk_favourite.isChecked()){
                         //Add to favourites
-                        seed_db.addSeed(id,txt_newseed.getText().toString(),imagepath,"0","0",1);
+                        seed_db.addSeed(id,txt_newseed.getText().toString(),"0","0",1);
                     }else
                     {
-                        seed_db.addSeed(id,txt_newseed.getText().toString(),imagepath,"0","0",0);
+                        seed_db.addSeed(id,txt_newseed.getText().toString(),"0","0",0);
                     }
 
 
                     processDialog(false);
-                    SeedFeed.getInstance().refreshSeeds();
+                    //SeedFeed.getInstance().refreshSeeds();
 
                 }
 
-                Toast.makeText(NewSeed.this, "New seed created successfully!", Toast.LENGTH_SHORT).show();
+                //Toast.makeText(NewSeed.this, "New seed created successfully!", Toast.LENGTH_SHORT).show();
+                openSeedList();
                 finish();
 
             }
         });
 
-        img_add_image.setOnClickListener(new View.OnClickListener() {                               //Adding a photo from gallery or camera
-            @Override
-            public void onClick(View v) {
-                //onPickImage(v);                                                                     //Picking the Image
-            }
-        });
+//        img_add_image.setOnClickListener(new View.OnClickListener() {                               //Adding a photo from gallery or camera
+//            @Override
+//            public void onClick(View v) {
+//                onPickImage(v);                                                                     //Picking the Image
+//            }
+//        });
 
 
 
@@ -198,7 +199,7 @@ public class NewSeed extends AppCompatActivity {
 
     public void onPickImage(View view) {
         // Click on image button
-        ImagePicker.pickImage(this, "Pick or take a photo!");
+        //ImagePicker.pickImage(this, "Pick or take a photo!");
     }
 
 
@@ -209,9 +210,6 @@ public class NewSeed extends AppCompatActivity {
 
 
     public String saveImage(String imageName, Bitmap image){
-
-        //Sample image
-        //Bitmap
         new ImageHandler(this).saveImage(imageName, image);
         return imageName + ".jpg";
     }
@@ -221,6 +219,11 @@ public class NewSeed extends AppCompatActivity {
             dialog = ProgressDialog.show(this, "Creating message", "Generating a new seed...", true);
         else
             dialog.dismiss();
+    }
+
+    public void openSeedList(){
+        Intent intent = new Intent(this, SeedFeed.class);
+        this.startActivity(intent);
     }
 
 }
