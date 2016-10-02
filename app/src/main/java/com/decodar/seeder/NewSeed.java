@@ -1,6 +1,8 @@
 package com.decodar.seeder;
 
 import android.app.ProgressDialog;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothServerSocket;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -19,6 +21,7 @@ import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
@@ -28,11 +31,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.decodar.bluetoothConnection.BConnection;
 import com.decodar.db.dbmanager;
 import com.decodar.plugins.ImagePicker;
 
 import org.w3c.dom.Text;
 
+import java.io.IOException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.UUID;
@@ -44,11 +50,14 @@ public class NewSeed extends AppCompatActivity {
     //Database
     private dbmanager seed_db;
 
+    private BluetoothAdapter bluetoothAdapter;
+
     //New seed textbox
     private EditText txt_newseed;
     private TextView txt_char_counter;
     private ImageView img_add_image;
     private CheckBox chk_favourite;
+    private BConnection bConnection = new BConnection();
 
     private ProgressDialog dialog;
 
@@ -60,6 +69,22 @@ public class NewSeed extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //oncreate added pl remove when necessary
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        try {
+            BluetoothServerSocket btSocket = bluetoothAdapter.
+                    listenUsingInsecureRfcommWithServiceRecord("Banner", UUID.fromString(bConnection.encodeDatatoUUID("hello")));
+            Log.d("Broadcast started",bConnection.encodeDatatoUUID("hello"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        Intent discoverableIntent = new
+                Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 3600);
+        startActivity(discoverableIntent);
+
         //Changing the stats bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             Window window = getWindow();
@@ -68,7 +93,6 @@ public class NewSeed extends AppCompatActivity {
         }
 
         seed_db = dbmanager.getInstance(this);
-
 
         txt_newseed = (EditText) findViewById(R.id.text_newseed);                                   //Initiating UI components
         txt_char_counter = (TextView)findViewById(R.id.seed_character_count);
@@ -92,6 +116,16 @@ public class NewSeed extends AppCompatActivity {
                             .setAction("Action", null).show();
                 }else
                 {
+                    //Todo generate the json object and start broadcasting
+                    bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+                    try {
+                        BluetoothServerSocket btSocket = bluetoothAdapter.
+                                listenUsingInsecureRfcommWithServiceRecord("Banner", UUID.fromString(bConnection.encodeDatatoUUID(txt_newseed.getText().toString())));
+                        Log.d("Broadcast started",bConnection.encodeDatatoUUID(txt_newseed.getText().toString()));
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+
                     //Show process Dialog
                     processDialog(true);
 
@@ -108,11 +142,8 @@ public class NewSeed extends AppCompatActivity {
                     }
 
 
-                    //Todo generate the json object and start broadcasting
-
                     processDialog(false);
                     SeedFeed.getInstance().refreshSeeds();
-
 
                 }
 
@@ -188,4 +219,5 @@ public class NewSeed extends AppCompatActivity {
         else
             dialog.dismiss();
     }
+
 }

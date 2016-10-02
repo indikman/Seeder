@@ -1,18 +1,24 @@
 package com.decodar.seeder;
 
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,6 +26,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
 
+import com.decodar.bluetoothConnection.BConnection;
 import com.decodar.db.dbmanager;
 import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
@@ -30,6 +37,76 @@ import java.util.List;
 public class SeedFeed extends AppCompatActivity {
 
     private dbmanager seed_db;
+    private BluetoothAdapter btAdapter;
+    private static final int REQUEST_ENABLE_BT = 1;
+    private BConnection bConnection = new BConnection();
+    private String lastDiscoveredfeed = "";
+
+    private final BroadcastReceiver mReceiver = new
+            BroadcastReceiver() {
+                public void onReceive(Context context, Intent intent) {
+                    String action = intent.getAction();
+                    if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        device.fetchUuidsWithSdp();
+                    } else if (BluetoothDevice.ACTION_UUID.equals(action)) {
+                        BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                        Parcelable[] uuids = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
+                        if(uuids != null) {
+                            for (Parcelable ep : uuids) {
+                                String uuid = ep.toString();
+                                // Detect/extract data here
+                                if (bConnection.decodeFromUUID(uuid) != null) {
+                                    if (!lastDiscoveredfeed.equals(bConnection.decodeFromUUID(uuid))) { //check if it has been discovered first
+                                        lastDiscoveredfeed = bConnection.decodeFromUUID(uuid);
+                                        Log.d("Decoded", bConnection.decodeFromUUID(uuid));
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            };
+
+
+    /* This routine is called when an activity completes.*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == REQUEST_ENABLE_BT) {
+            CheckBTState();
+        }
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (btAdapter != null) {
+            btAdapter.cancelDiscovery();
+        }
+        unregisterReceiver(mReceiver);
+    }
+
+    private void CheckBTState() {
+        // Check for Bluetooth support and then check to make sure it is turned on
+        // If it isn't request to turn it on
+        // List paired devices
+        // Emulator doesn't support Bluetooth and will return null
+        if(btAdapter==null) {
+            Log.d("Tag","\nBluetooth NOT supported. Aborting.");
+            return;
+        } else {
+            if (btAdapter.isEnabled()) {
+                Log.d("tag","\nBluetooth is enabled...");
+
+                // Starting the device discovery
+                btAdapter.startDiscovery();
+            } else {
+                Intent enableBtIntent = new Intent(btAdapter.ACTION_REQUEST_ENABLE);
+                startActivityForResult(enableBtIntent, REQUEST_ENABLE_BT);
+            }
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +114,18 @@ public class SeedFeed extends AppCompatActivity {
         setContentView(R.layout.activity_seed_feed);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        // Getting the Bluetooth adapter
+        btAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        //Register the BroadcastReceiver
+        IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        filter.addAction(BluetoothDevice.ACTION_UUID);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_STARTED);
+        filter.addAction(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
+        registerReceiver(mReceiver,filter);
+
+        CheckBTState();
 
         //Changing the stats bar color
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
@@ -46,9 +135,8 @@ public class SeedFeed extends AppCompatActivity {
 
         }
 
-        //populat the seed feed
+        //populate the seed feed
         refreshSeeds();
-
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
