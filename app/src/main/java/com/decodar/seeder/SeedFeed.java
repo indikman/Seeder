@@ -157,6 +157,7 @@ public class SeedFeed extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 addNewSeed(); // goto add new seed activitys
+                finish();
             }
         });
 
@@ -176,8 +177,8 @@ public class SeedFeed extends AppCompatActivity {
     }
 
     private void openFavourites(){
-        Intent intent = new Intent(this, SeedFavourites.class);
-        this.startActivity(intent);
+        //Intent intent = new Intent(this, SeedFavourites.class);
+       // this.startActivity(intent);
     }
 
 
@@ -216,13 +217,13 @@ public class SeedFeed extends AppCompatActivity {
 
                 String ID = seeds.getString(seeds.getColumnIndex(dbmanager.seed_id));
                 String seed_text = seeds.getString(seeds.getColumnIndex(dbmanager.seed_text));
-                String seed_image = seeds.getString(seeds.getColumnIndex(dbmanager.seed_image));
+                //String seed_image = seeds.getString(seeds.getColumnIndex(dbmanager.seed_image));
                 String seed_likes = seeds.getString(seeds.getColumnIndex(dbmanager.seed_likes));
                 String seed_replies = seeds.getString(seeds.getColumnIndex(dbmanager.seed_replies));
 
-                Bitmap image = new ImageHandler(this).loadImage(seed_image);
+                //Bitmap image = new ImageHandler(this).loadImage(seed_image);
 
-                Seed seed = new Seed(ID,seed_text,image,Integer.parseInt(seed_likes),Integer.parseInt(seed_replies));
+                Seed seed = new Seed(ID,seed_text,Integer.parseInt(seed_likes),Integer.parseInt(seed_replies));
 
                 seedlist.add(seed);
 
