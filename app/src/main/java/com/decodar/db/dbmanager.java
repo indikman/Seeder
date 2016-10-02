@@ -23,7 +23,7 @@ public class dbmanager extends SQLiteOpenHelper {
 
     public static final String seed_id = "ID";
     public static final String seed_text = "text";
-    public static final String seed_image = "image";
+   // public static final String seed_image = "image";
     public static final String seed_likes = "likes";
     public static final String seed_replies = "replies";
     public static final String seed_favourite = "isfav";
@@ -57,7 +57,6 @@ public class dbmanager extends SQLiteOpenHelper {
         db.execSQL("CREATE TABLE " + seed_table + "(" +
                 seed_id + " text primary key ," +
                 seed_text + " text ," +
-                seed_image + " text ," +
                 seed_likes + " text ," +
                 seed_replies + " text, " +
                 seed_favourite + " integer)");
@@ -78,12 +77,12 @@ public class dbmanager extends SQLiteOpenHelper {
 
 
     //Insert a seed
-    public boolean addSeed(String ID, String text, String image, String likes, String replies, int isFavourite){
+    public boolean addSeed(String ID, String text, String likes, String replies, int isFavourite){
         SQLiteDatabase db = this.getWritableDatabase();
         ContentValues cv = new ContentValues();
         cv.put(seed_id, ID);
         cv.put(seed_text, text);
-        cv.put(seed_image, image);
+       // cv.put(seed_image, image);
         cv.put(seed_likes, likes);
         cv.put(seed_replies, replies);
         cv.put(seed_favourite, isFavourite);
