@@ -156,7 +156,7 @@ public class NewSeed extends AppCompatActivity {
         img_add_image.setOnClickListener(new View.OnClickListener() {                               //Adding a photo from gallery or camera
             @Override
             public void onClick(View v) {
-                onPickImage(v);                                                                     //Picking the Image
+                //onPickImage(v);                                                                     //Picking the Image
             }
         });
 
@@ -209,6 +209,9 @@ public class NewSeed extends AppCompatActivity {
 
 
     public String saveImage(String imageName, Bitmap image){
+
+        //Sample image
+        //Bitmap
         new ImageHandler(this).saveImage(imageName, image);
         return imageName + ".jpg";
     }

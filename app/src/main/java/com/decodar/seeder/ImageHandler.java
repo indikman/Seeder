@@ -35,7 +35,10 @@ public class ImageHandler {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(path);
-            bitmap.compress(Bitmap.CompressFormat.PNG, 30, fos); //compressing the image
+
+            bitmap = Bitmap.createScaledBitmap(bitmap, 512,512*(bitmap.getWidth()/bitmap.getHeight()), true);
+            bitmap.compress(Bitmap.CompressFormat.JPEG, 30, fos); //compressing the image
+
             Log.e("Image Save", "Image saved successfully");
             Log.e("Image Save", directory.getAbsolutePath());
         } catch (FileNotFoundException e) {
