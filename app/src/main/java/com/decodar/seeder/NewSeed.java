@@ -58,7 +58,7 @@ public class NewSeed extends AppCompatActivity {
     private ImageView img_add_image;
     private CheckBox chk_favourite;
     private BConnection bConnection = new BConnection();
-
+    private static int iteration =1;
     private ProgressDialog dialog;
 
 
@@ -118,9 +118,10 @@ public class NewSeed extends AppCompatActivity {
                 {
                     //Todo generate the json object and start broadcasting
                     bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
                     try {
                         BluetoothServerSocket btSocket = bluetoothAdapter.
-                                listenUsingInsecureRfcommWithServiceRecord("Banner", UUID.fromString(bConnection.encodeDatatoUUID(txt_newseed.getText().toString())));
+                                listenUsingInsecureRfcommWithServiceRecord("Banner " + String.valueOf(iteration++), UUID.fromString(bConnection.encodeDatatoUUID(txt_newseed.getText().toString())));
                         Log.d("Broadcast started",bConnection.encodeDatatoUUID(txt_newseed.getText().toString()));
                     } catch (IOException e) {
                         e.printStackTrace();

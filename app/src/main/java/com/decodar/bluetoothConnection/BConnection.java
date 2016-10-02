@@ -54,8 +54,9 @@ public class BConnection {
         }
     }
 
-    public String encodeDatatoUUID(String data){
-        String paddedData = String.format("%-14s", data).replace(' ', '\0');
+    public String encodeDatatoUUID(String msg){
+        String data = msg;
+        String paddedData = String.format("%-14s", data);
         String hexData =
                 String.format("%028x", new BigInteger(1,
                         paddedData.getBytes()));
@@ -64,7 +65,7 @@ public class BConnection {
                         hexData.substring(8, 12) + "-4" +
                         hexData.substring(12, 15) + "-8" +
                         hexData.substring(15, 18) + "-" +
-                        hexData.substring(18) + "c0de";
+                        hexData.substring(18, 26) + "c0de";
 
         return uuidString;
     }

@@ -25,6 +25,7 @@ import android.view.MenuItem;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import com.decodar.bluetoothConnection.BConnection;
 import com.decodar.db.dbmanager;
@@ -32,8 +33,12 @@ import com.decodar.seeds.Seed;
 import com.decodar.seeds.SeedAdaptor;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 
 public class SeedFeed extends AppCompatActivity {
 
@@ -42,6 +47,7 @@ public class SeedFeed extends AppCompatActivity {
     private static final int REQUEST_ENABLE_BT = 1;
     private BConnection bConnection = new BConnection();
     private ArrayList<BluetoothDevice> btDeviceList = new ArrayList<BluetoothDevice>();
+    private static Set<String> feedSet = new HashSet<String>();
 
     private final BroadcastReceiver mReceiver = new
             BroadcastReceiver() {
@@ -56,15 +62,31 @@ public class SeedFeed extends AppCompatActivity {
                             Parcelable[] uuidExtra = intent.getParcelableArrayExtra(BluetoothDevice.EXTRA_UUID);
                             for (int i=0; i<uuidExtra.length; i++) {
                                 if(bConnection.decodeFromUUID(uuidExtra[i].toString()) != null){
-                                      Log.d("Decoded", bConnection.decodeFromUUID(uuidExtra[i].toString()));
+                                    Log.d("Decoded", bConnection.decodeFromUUID(uuidExtra[i].toString()));
+
+                                    if(!feedSet.contains(bConnection.decodeFromUUID(uuidExtra[i].toString()))){
+                                        feedSet.add(bConnection.decodeFromUUID(uuidExtra[i].toString()));
+
+                                        //addToDatabase
+                                        String id = generateID();
+                                        seed_db.addSeed(id,bConnection.decodeFromUUID(uuidExtra[i].toString()),"0","0",0);
+
+                                        //refresh feed
+                                        refreshSeeds();
+                                    }
+
                                 }
                             }
                         } else {
                             if(BluetoothAdapter.ACTION_DISCOVERY_STARTED.equals(action)) {
                                 Log.d("tag","\nDiscovery Started...");
+                                Toast toast = Toast.makeText(SeedFeed.this, "Discovery Started",Toast.LENGTH_SHORT);
+                                toast.show();
                             } else {
                                 if(BluetoothAdapter.ACTION_DISCOVERY_FINISHED.equals(action)) {
                                    Log.d("tag","\nDiscovery Finished");
+                                    Toast toast = Toast.makeText(SeedFeed.this, "Discovery Finished",Toast.LENGTH_SHORT);
+                                    toast.show();
                                     Iterator<BluetoothDevice> itr = btDeviceList.iterator();
                                     while (itr.hasNext()) {
                                         // Get Services for paired devices
@@ -247,6 +269,10 @@ public class SeedFeed extends AppCompatActivity {
         cardList.setAdapter(seedAd);
     }
 
+    public String generateID(){
+        //TODO @malith change the generateID method
+        return UUID.randomUUID().toString() + TimeUnit.MILLISECONDS.toSeconds(System.currentTimeMillis()) + "";
+    }
 
 
     //Singleton
